@@ -222,30 +222,39 @@
     }
 
     function finishQuiz() {
-      clearInterval(timerInterval);
-      document.getElementById('quiz').style.display = 'none';
-      document.getElementById('result').style.display = 'block';
+  clearInterval(timerInterval);
+  document.getElementById('quiz').style.display = 'none';
+  document.getElementById('result').style.display = 'block';
 
-      document.getElementById('resName').textContent = studentInfo.name;
-      document.getElementById('resDept').textContent = studentInfo.department;
-      document.getElementById('resLevel').textContent = studentInfo.level;
-      document.getElementById('resScore').textContent = score;
-      document.getElementById('resTime').textContent = timeElapsed;
+  document.getElementById('resName').textContent = studentInfo.name;
+  document.getElementById('resDept').textContent = studentInfo.department;
+  document.getElementById('resLevel').textContent = studentInfo.level;
+  document.getElementById('resScore').textContent = score;
+  document.getElementById('resTime').textContent = timeElapsed;
 
-      // حفظ النتيجة
-      fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'submitResult',
-          name: studentInfo.name,
-          department: studentInfo.department,
-          level: studentInfo.level,
-          score: score,
-          time: timeElapsed
-        })
-      }).catch(err => console.error("فشل الحفظ:", err));
-    }
+  // ✅ إرسال النتيجة إلى Google Apps Script
+  fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      action: 'submitResult',
+      name: studentInfo.name,
+      department: studentInfo.department,
+      level: studentInfo.level,
+      score: score,
+      time: timeElapsed
+    })
+  })
+  .then(res => res.text())
+  .then(msg => {
+    console.log("✅ النتيجة حُفظت:", msg);
+    // لا حاجة لتنبيه — يكفي أن تظهر شاشة النتائج
+  })
+  .catch(err => {
+    console.error("❌ فشل الحفظ:", err);
+    alert("⚠️ لم تُحفظ نتيجتك. تحقق من الخادم.");
+  });
+}
   </script>
 
 </body>
