@@ -131,7 +131,7 @@
 
   <script>
     // ✅ استبدل هذا الرابط بـ Web App URL الخاص بك
-    const API_URL = "https://script.google.com/macros/s/AKfycbyj-pshKLR_3S7LMJiIV5URGJBcylVrASusGFY0tWRjxVnlQhPksM1iTGmlpZ4xwh_p/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbw3OvZkLwSqYaheMOuDkMkUoowisWc62-TG_eIDke825-MMutVl8ang6enhSAn4fOB3/exec";
 
     let studentInfo = null;
     let questions = [];
@@ -233,19 +233,27 @@
   document.getElementById('resTime').textContent = timeElapsed;
 
   // ✅ إرسال النتيجة إلى Google Apps Script
-const formData = new FormData();
-formData.append("action", "submitResult");
-formData.append("name", studentInfo.name);
-formData.append("department", studentInfo.department);
-formData.append("level", studentInfo.level);
-formData.append("score", score);
-formData.append("time", timeElapsed);
-
-fetch(API_URL, {
-  method: 'POST',
-  body: formData
-});
-
+  fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      action: 'submitResult',
+      name: studentInfo.name,
+      department: studentInfo.department,
+      level: studentInfo.level,
+      score: score,
+      time: timeElapsed
+    })
+  })
+  .then(res => res.text())
+  .then(msg => {
+    console.log("✅ النتيجة حُفظت:", msg);
+    // لا حاجة لتنبيه — يكفي أن تظهر شاشة النتائج
+  })
+  .catch(err => {
+    console.error("❌ فشل الحفظ:", err);
+    alert("⚠️ لم تُحفظ نتيجتك. تحقق من الخادم.");
+  });
 }
   </script>
 
